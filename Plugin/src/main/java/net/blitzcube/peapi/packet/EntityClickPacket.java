@@ -1,57 +1,67 @@
 package net.blitzcube.peapi.packet;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
+import java.lang.reflect.Constructor;
+
+import org.bukkit.entity.Player;
+
+import me.dablakbandit.core.server.packet.wrapped.WrappedPacket;
+import me.dablakbandit.core.utils.NMSUtils;
 import net.blitzcube.peapi.api.entity.IEntityIdentifier;
 import net.blitzcube.peapi.api.packet.IEntityClickPacket;
 import net.blitzcube.peapi.entity.EntityIdentifier;
-import org.bukkit.entity.Player;
 
 /**
  * Created by iso2013 on 4/21/2018.
  */
-public class EntityClickPacket extends EntityPacket implements IEntityClickPacket {
-    private static final PacketType TYPE = PacketType.Play.Client.USE_ENTITY;
-    private ClickType type;
-
-    public EntityClickPacket(IEntityIdentifier identifier) {
-        super(identifier, new PacketContainer(TYPE), true);
-    }
-
-    private EntityClickPacket(IEntityIdentifier identifier, PacketContainer rawPacket, ClickType type) {
-        super(identifier, rawPacket, false);
-        this.type = type;
-    }
-
-    static EntityPacket unwrap(int entityID, PacketContainer c, Player p) {
-        return new EntityClickPacket(
-                new EntityIdentifier(entityID, p),
-                c,
-                ClickType.getByProtocolLib(c.getEntityUseActions().read(0))
-        );
-    }
-
-    @Override
-    public ClickType getClickType() {
-        return type;
-    }
-
-    @Override
-    public void setClickType(ClickType type) {
-        this.type = type;
-        super.rawPacket.getEntityUseActions().write(0, type.getProtocolLibEquivalent());
-    }
-
-    @Override
-    public PacketContainer getRawPacket() {
-        assert type != null;
-        return super.getRawPacket();
-    }
-
-    @Override
-    public EntityPacket clone() {
-        EntityClickPacket p = new EntityClickPacket(getIdentifier());
-        p.setClickType(type);
-        return p;
-    }
+public class EntityClickPacket extends EntityPacket implements IEntityClickPacket{
+	
+	private static Class<?>		classPacketPlayInUseEntity	= NMSUtils.getClass("PacketPlayInUseEntity");
+	private static Constructor	conPacketPlayInUseEntity	= NMSUtils.getConstructor(classPacketPlayInUseEntity);
+	
+	public static WrappedPacket getEmptyPacket(){
+		try{
+			return new WrappedPacket(conPacketPlayInUseEntity.newInstance());
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private ClickType type;
+	
+	public EntityClickPacket(IEntityIdentifier identifier, WrappedPacket packet){
+		super(identifier, packet, true);
+	}
+	
+	private EntityClickPacket(IEntityIdentifier identifier, WrappedPacket rawPacket, ClickType type){
+		super(identifier, rawPacket, false);
+		this.type = type;
+	}
+	
+	static EntityPacket unwrap(int entityID, WrappedPacket packet, Player p){
+		return new EntityClickPacket(new EntityIdentifier(entityID, p), packet, ClickType.getByEnum(packet.getEnums().get(0)));
+	}
+	
+	@Override
+	public ClickType getClickType(){
+		return type;
+	}
+	
+	@Override
+	public void setClickType(ClickType type){
+		this.type = type;
+		wrappedPacket.writeEnum(0, type.getPacketEquivalent());
+	}
+	
+	@Override
+	public Object getRawPacket(){
+		return super.getRawPacket();
+	}
+	
+	@Override
+	public EntityPacket clone(){
+		EntityClickPacket p = new EntityClickPacket(getIdentifier(), getEmptyPacket());
+		p.setClickType(type);
+		return p;
+	}
 }
