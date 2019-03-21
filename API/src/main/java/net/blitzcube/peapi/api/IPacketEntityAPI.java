@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import net.blitzcube.peapi.api.entity.IEntityIdentifier;
 import net.blitzcube.peapi.api.entity.fake.IFakeEntity;
 import net.blitzcube.peapi.api.entity.fake.IFakeEntityFactory;
+import net.blitzcube.peapi.api.entity.modifier.IEntityModifierRegistry;
 import net.blitzcube.peapi.api.listener.IListener;
 import net.blitzcube.peapi.api.packet.IEntityPacket;
 import net.blitzcube.peapi.api.packet.IEntityPacketFactory;
@@ -56,6 +57,13 @@ public interface IPacketEntityAPI{
 	 * @return whether or not it is a fake entity
 	 */
 	boolean isFakeID(int entityID);
+	
+	/**
+	 * Gets the modifier registry for this instance of the API.
+	 *
+	 * @return the modifier registry
+	 */
+	IEntityModifierRegistry getModifierRegistry();
 	
 	/**
 	 * Gets the entity factory for this instance of the API.

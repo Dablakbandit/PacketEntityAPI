@@ -24,6 +24,7 @@ import net.blitzcube.peapi.api.IPacketEntityAPI;
 import net.blitzcube.peapi.api.entity.IEntityIdentifier;
 import net.blitzcube.peapi.api.entity.fake.IFakeEntity;
 import net.blitzcube.peapi.api.entity.fake.IFakeEntityFactory;
+import net.blitzcube.peapi.api.entity.modifier.IEntityModifierRegistry;
 import net.blitzcube.peapi.api.listener.IListener;
 import net.blitzcube.peapi.api.packet.IEntityGroupPacket;
 import net.blitzcube.peapi.api.packet.IEntityPacket;
@@ -32,6 +33,7 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
 import net.blitzcube.peapi.entity.SightDistanceRegistry;
 import net.blitzcube.peapi.entity.fake.FakeEntity;
 import net.blitzcube.peapi.entity.fake.FakeEntityFactory;
+import net.blitzcube.peapi.entity.modifier.EntityModifierRegistry;
 import net.blitzcube.peapi.event.engine.PacketEventDispatcher;
 import net.blitzcube.peapi.packet.EntityPacketFactory;
 
@@ -79,20 +81,24 @@ public class PacketEntityAPI extends JavaPlugin implements IPacketEntityAPI{
 	/*
 	 * Begin actual API implementation:
 	 */
+	private EntityModifierRegistry	modifierRegistry;
 	private FakeEntityFactory		fakeEntityFactory;
 	private EntityPacketFactory		packetFactory;
 	private PacketEventDispatcher	dispatcher;
 	
 	@Override
 	public void onLoad(){
+		this.modifierRegistry = new EntityModifierRegistry();
 		this.fakeEntityFactory = new FakeEntityFactory(this);
 		this.packetFactory = new EntityPacketFactory();
 		this.dispatcher = new PacketEventDispatcher(this);
 		
-		chainFactory = BukkitTaskChainFactory.create(this);
-		
 		if(instance == null)
 			instance = this;
+	}
+	
+	public void onEnable(){
+		chainFactory = BukkitTaskChainFactory.create(this);
 	}
 	
 	public static TaskChainFactory getChainFactory(){
@@ -143,6 +149,11 @@ public class PacketEntityAPI extends JavaPlugin implements IPacketEntityAPI{
 	@Override
 	public boolean isFakeID(int entityID){
 		return fakeEntityFactory.isFakeEntity(entityID);
+	}
+	
+	@Override
+	public IEntityModifierRegistry getModifierRegistry(){
+		return modifierRegistry;
 	}
 	
 	@Override

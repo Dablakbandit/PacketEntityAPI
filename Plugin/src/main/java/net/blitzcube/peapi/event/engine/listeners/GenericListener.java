@@ -26,7 +26,8 @@ public class GenericListener extends WrappedPacketListener{
 	private final PacketEventDispatcher										dispatcher;
 	private boolean															sendForFake;
 	private boolean															collidable;
-	private static final Map<Class<?>, IEntityPacketEvent.EntityPacketType>	TYPES	= new HashMap<>();
+	private static final Map<Class<?>, IEntityPacketEvent.EntityPacketType>	TYPES						= new HashMap<>();
+	private static Class<?>													classPacketPlayOutEntity	= NMSUtils.getNMSClass("PacketPlayOutEntity");
 	
 	static{
 		TYPES.put(NMSUtils.getNMSClass("PacketPlayOutEntityMetadata"), IEntityPacketEvent.EntityPacketType.DATA);
@@ -37,7 +38,6 @@ public class GenericListener extends WrappedPacketListener{
 		TYPES.put(NMSUtils.getNMSClass("PacketPlayOutAnimation"), IEntityPacketEvent.EntityPacketType.ANIMATION);
 		TYPES.put(NMSUtils.getNMSClass("PacketPlayOutEntityEffect"), IEntityPacketEvent.EntityPacketType.ADD_EFFECT);
 		TYPES.put(NMSUtils.getNMSClass("PacketPlayOutRemoveEntityEffect"), IEntityPacketEvent.EntityPacketType.REMOVE_EFFECT);
-		Class<?> classPacketPlayOutEntity = NMSUtils.getNMSClass("PacketPlayOutEntity");
 		TYPES.put(NMSUtils.getInnerClass(classPacketPlayOutEntity, "PacketPlayOutRelEntityMove"), IEntityPacketEvent.EntityPacketType.MOVE);
 		TYPES.put(NMSUtils.getInnerClass(classPacketPlayOutEntity, "PacketPlayOutRelEntityMoveLook"), IEntityPacketEvent.EntityPacketType.MOVE);
 		TYPES.put(NMSUtils.getInnerClass(classPacketPlayOutEntity, "PacketPlayOutEntityLook"), IEntityPacketEvent.EntityPacketType.MOVE);
@@ -111,8 +111,8 @@ public class GenericListener extends WrappedPacketListener{
 		boolean write = true;
 		Player target = pl.getPlayer();
 		
-		int entityID = 0;
 		IEntityPacketEvent.EntityPacketType eT = TYPES.get(packet.getRawPacket().getClass());
+		int entityID = 0;
 		if(!eT.equals(IEntityPacketEvent.EntityPacketType.DESTROY)){
 			entityID = packet.getInts().get(0);
 			if(!sendForFake && parent.isFakeID(entityID))

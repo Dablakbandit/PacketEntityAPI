@@ -15,7 +15,7 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityAnimationPacket extends EntityPacket implements IEntityAnimationPacket{
 	
-	private static Class<?>		classPacketPlayOutAnimation	= NMSUtils.getClass("PacketPlayOutAnimation");
+	private static Class<?>		classPacketPlayOutAnimation	= NMSUtils.getNMSClass("PacketPlayOutAnimation");
 	private static Constructor	conPacketPlayOutAnimation	= NMSUtils.getConstructor(classPacketPlayOutAnimation);
 	
 	public static WrappedPacket getEmptyPacket(){

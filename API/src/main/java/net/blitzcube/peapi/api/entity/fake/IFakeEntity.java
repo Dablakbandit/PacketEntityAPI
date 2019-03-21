@@ -1,5 +1,6 @@
 package net.blitzcube.peapi.api.entity.fake;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
@@ -9,6 +10,8 @@ import org.bukkit.entity.Player;
 
 import net.blitzcube.peapi.api.entity.IEntityIdentifier;
 import net.blitzcube.peapi.api.entity.hitbox.IHitbox;
+import net.blitzcube.peapi.api.entity.modifier.IEntityModifier;
+import net.blitzcube.peapi.api.entity.modifier.IModifiableEntity;
 
 /**
  * @author iso2013
@@ -85,13 +88,13 @@ public interface IFakeEntity{
 	 * Modifiers can also be obtained from {@link #getModifiers()}.
 	 * @return the modifiable entity reference that is tied to this entity
 	 */
-	// TODO IModifiableEntity getModifiableEntity();
+	IModifiableEntity getModifiableEntity();
 	
 	/**
 	 * Gets all of the modifiers that can be applied to this fake entity, given the entity type. These
 	 * @return a map of all of the valid modifiers
 	 */
-	// TODO Map<String, IEntityModifier> getModifiers();
+	Map<String, IEntityModifier> getModifiers();
 	
 	/**
 	 * Checks whether or not the {@link Player} provided is intersecting the fake entity. This is used by the

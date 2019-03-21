@@ -1,3 +1,5 @@
 
 *.iml
 */target/*
+docs/*
+Plugin/output/plugin-latest.jar

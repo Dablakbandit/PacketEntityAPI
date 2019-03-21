@@ -15,12 +15,12 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityStatusPacket extends EntityPacket implements IEntityStatusPacket{
 	
-	private static Class<?>		classEntityStatusPacket	= NMSUtils.getNMSClass("ClassEntityStatusPacket");
-	private static Constructor	conEntityStatusPacket	= NMSUtils.getConstructor(classEntityStatusPacket);
+	private static Class<?>		classPacketPlayOutEntityStatus	= NMSUtils.getNMSClass("PacketPlayOutEntityStatus");
+	private static Constructor	conPacketPlayOutEntityStatus	= NMSUtils.getConstructor(classPacketPlayOutEntityStatus);
 	
 	public static WrappedPacket getEmptyPacket(){
 		try{
-			return new WrappedPacket(conEntityStatusPacket.newInstance());
+			return new WrappedPacket(conPacketPlayOutEntityStatus.newInstance());
 		}catch(Exception e){
 			e.printStackTrace();
 		}

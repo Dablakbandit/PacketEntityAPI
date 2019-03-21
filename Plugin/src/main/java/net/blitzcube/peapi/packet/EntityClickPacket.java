@@ -15,7 +15,7 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityClickPacket extends EntityPacket implements IEntityClickPacket{
 	
-	private static Class<?>		classPacketPlayInUseEntity	= NMSUtils.getClass("PacketPlayInUseEntity");
+	private static Class<?>		classPacketPlayInUseEntity	= NMSUtils.getNMSClass("PacketPlayInUseEntity");
 	private static Constructor	conPacketPlayInUseEntity	= NMSUtils.getConstructor(classPacketPlayInUseEntity);
 	
 	public static WrappedPacket getEmptyPacket(){

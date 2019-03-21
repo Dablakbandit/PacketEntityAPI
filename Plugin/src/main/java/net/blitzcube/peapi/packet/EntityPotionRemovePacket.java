@@ -18,10 +18,10 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityPotionRemovePacket extends EntityPacket implements IEntityPotionRemovePacket{
 	
-	private static Class<?>			classPacketPlayOutRemoveEntityEffect	= NMSUtils.getClass("PacketPlayOutRemoveEntityEffect");
+	private static Class<?>			classPacketPlayOutRemoveEntityEffect	= NMSUtils.getNMSClass("PacketPlayOutRemoveEntityEffect");
 	private static Constructor<?>	conPacketPlayOutRemoveEntityEffect		= NMSUtils.getConstructor(classPacketPlayOutRemoveEntityEffect);
 	private static Field			fieldEffect								= NMSUtils.getField(classPacketPlayOutRemoveEntityEffect, "b");
-	private static Class<?>			classMobEffectList						= NMSUtils.getClass("MobEffectList");
+	private static Class<?>			classMobEffectList						= NMSUtils.getNMSClass("MobEffectList");
 	private static Method			methodGetId								= NMSUtils.getMethod(classMobEffectList, "getId", classMobEffectList);
 	private static Method			methodFromId							= NMSUtils.getMethod(classMobEffectList, "fromId", int.class);
 	

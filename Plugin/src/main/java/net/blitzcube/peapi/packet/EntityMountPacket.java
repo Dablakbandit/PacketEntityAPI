@@ -21,7 +21,7 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityMountPacket extends EntityPacket implements IEntityMountPacket{
 	
-	private static Class<?>			classPacketPlayOutEntityMount	= NMSUtils.getClass("PacketPlayOutEntityMount");
+	private static Class<?>			classPacketPlayOutEntityMount	= NMSUtils.getNMSClass("PacketPlayOutEntityMount");
 	private static Constructor<?>	conPacketPlayOutEntityMount		= NMSUtils.getConstructor(classPacketPlayOutEntityMount);
 	
 	public static WrappedPacket getEmptyPacket(){

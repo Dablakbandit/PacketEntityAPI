@@ -26,14 +26,14 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacket{
 	
-	private static Class<?>			classPacketPlayOutEntitySpawn				= NMSUtils.getNMSClass("PacketPlayOutEntitySpawn");
-	private static Constructor<?>	conPacketPlayOutEntitySpawn					= NMSUtils.getConstructor(classPacketPlayOutEntitySpawn);
-	private static Class<?>			classPacketPlayOutEntitySpawnExperienceOrb	= NMSUtils.getNMSClass("PacketPlayOutEntitySpawnExperienceOrb");
-	private static Constructor<?>	conPacketPlayOutEntitySpawnExperienceOrb	= NMSUtils.getConstructor(classPacketPlayOutEntitySpawnExperienceOrb);
-	private static Class<?>			classPacketPlayOutEntitySpawnPainting		= NMSUtils.getNMSClass("PacketPlayOutEntitySpawnPainting");
-	private static Constructor<?>	conPacketPlayOutEntitySpawnPainting			= NMSUtils.getConstructor(classPacketPlayOutEntitySpawnPainting);
-	private static Class<?>			classPacketPlayOutEntitySpawnWeather		= NMSUtils.getNMSClass("PacketPlayOutEntitySpawnWeather");
-	private static Constructor<?>	conPacketPlayOutEntitySpawnWeather			= NMSUtils.getConstructor(classPacketPlayOutEntitySpawnWeather);
+	private static Class<?>			classPacketPlayOutSpawnEntity				= NMSUtils.getNMSClass("PacketPlayOutSpawnEntity");
+	private static Constructor<?>	conPacketPlayOutSpawnEntity					= NMSUtils.getConstructor(classPacketPlayOutSpawnEntity);
+	private static Class<?>			classPacketPlayOutSpawnEntityExperienceOrb	= NMSUtils.getNMSClass("PacketPlayOutSpawnEntityExperienceOrb");
+	private static Constructor<?>	conPacketPlayOutSpawnEntityExperienceOrb	= NMSUtils.getConstructor(classPacketPlayOutSpawnEntityExperienceOrb);
+	private static Class<?>			classPacketPlayOutSpawnEntityPainting		= NMSUtils.getNMSClass("PacketPlayOutSpawnEntityPainting");
+	private static Constructor<?>	conPacketPlayOutSpawnEntityPainting			= NMSUtils.getConstructor(classPacketPlayOutSpawnEntityPainting);
+	private static Class<?>			classPacketPlayOutSpawnEntityWeather		= NMSUtils.getNMSClass("PacketPlayOutSpawnEntityWeather");
+	private static Constructor<?>	conPacketPlayOutSpawnEntityWeather			= NMSUtils.getConstructor(classPacketPlayOutSpawnEntityWeather);
 	
 	private EntityType				type;
 	private Location				location;
@@ -111,7 +111,6 @@ public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacke
 			if(EntityType.PAINTING.equals(t)){
 				WrappedObject blockPositon = c.getWrappedObject(classBlockPosition).get(0);
 				List<Integer> ints = blockPositon.getObjects(Integer.class, blockPositon.getRawObject().getClass().getSuperclass());
-				
 				location = new Location(w, ints.get(0), ints.get(1), ints.get(2));
 				break;
 			}
@@ -120,6 +119,7 @@ public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacke
 		}
 		if(t == null)
 			return null;
+		i.setUUID(uuid);
 		switch(t){
 		case PAINTING:
 			return new ObjectSpawnPacket(i, c, t, location, c.getStrings().get(0), directionToBlockFace(c.getEnums().get(0)), uuid);
@@ -134,11 +134,11 @@ public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacke
 	
 	private static EntityType packetTypeToEntity(WrappedPacket p){
 		Class<?> clazz = p.getRawPacket().getClass();
-		if(clazz.equals(classPacketPlayOutEntitySpawnWeather)){
+		if(clazz.equals(classPacketPlayOutSpawnEntityWeather)){
 			return EntityType.LIGHTNING;
-		}else if(clazz.equals(classPacketPlayOutEntitySpawnExperienceOrb)){
+		}else if(clazz.equals(classPacketPlayOutSpawnEntityExperienceOrb)){
 			return EntityType.EXPERIENCE_ORB;
-		}else if(clazz.equals(classPacketPlayOutEntitySpawnPainting)){ return EntityType.PAINTING; }
+		}else if(clazz.equals(classPacketPlayOutSpawnEntityPainting)){ return EntityType.PAINTING; }
 		return EntityType.UNKNOWN;
 	}
 	
@@ -146,13 +146,13 @@ public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacke
 		try{
 			switch(type){
 			case LIGHTNING:
-				return new WrappedPacket(conPacketPlayOutEntitySpawnWeather.newInstance());
+				return new WrappedPacket(conPacketPlayOutSpawnEntityWeather.newInstance());
 			case EXPERIENCE_ORB:
-				return new WrappedPacket(conPacketPlayOutEntitySpawnExperienceOrb.newInstance());
+				return new WrappedPacket(conPacketPlayOutSpawnEntityExperienceOrb.newInstance());
 			case PAINTING:
-				return new WrappedPacket(conPacketPlayOutEntitySpawnPainting.newInstance());
+				return new WrappedPacket(conPacketPlayOutSpawnEntityPainting.newInstance());
 			}
-			return new WrappedPacket(conPacketPlayOutEntitySpawn.newInstance());
+			return new WrappedPacket(conPacketPlayOutSpawnEntity.newInstance());
 		}catch(Exception e){
 			e.printStackTrace();
 		}

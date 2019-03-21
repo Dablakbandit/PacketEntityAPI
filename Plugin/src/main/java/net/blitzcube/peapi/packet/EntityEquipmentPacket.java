@@ -17,7 +17,7 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityEquipmentPacket extends EntityPacket implements IEntityEquipmentPacket{
 	
-	private static Class<?>			classPacketPlayOutEntityEquipment	= NMSUtils.getClass("PacketPlayOutEntityEquipment");
+	private static Class<?>			classPacketPlayOutEntityEquipment	= NMSUtils.getNMSClass("PacketPlayOutEntityEquipment");
 	private static Constructor<?>	conPacketPlayOutEntityEquipment		= NMSUtils.getConstructor(classPacketPlayOutEntityEquipment);
 	
 	public static WrappedPacket getEmptyPacket(){
@@ -32,7 +32,7 @@ public class EntityEquipmentPacket extends EntityPacket implements IEntityEquipm
 	private EquipmentSlot	slot;
 	private ItemStack		item;
 	
-	private static Class<?>	classEnumItemSlot	= NMSUtils.getClass("EnumItemSlot");
+	private static Class<?>	classEnumItemSlot	= NMSUtils.getNMSClass("EnumItemSlot");
 	
 	EntityEquipmentPacket(IEntityIdentifier identifier, WrappedPacket packet){
 		super(identifier, packet, true);

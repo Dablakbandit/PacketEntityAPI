@@ -21,7 +21,7 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityDestroyPacket extends EntityPacket implements IEntityDestroyPacket{
 	
-	private static Class<?>			classPacketPlayOutEntityDestroy	= NMSUtils.getClass("PacketPlayOutEntityDestroy");
+	private static Class<?>			classPacketPlayOutEntityDestroy	= NMSUtils.getNMSClass("PacketPlayOutEntityDestroy");
 	private static Constructor<?>	conPacketPlayOutEntityDestroy	= NMSUtils.getConstructor(classPacketPlayOutEntityDestroy);
 	
 	public static WrappedPacket getEmptyPacket(){

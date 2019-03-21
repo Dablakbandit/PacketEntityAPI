@@ -1,6 +1,5 @@
 package net.blitzcube.peapi.packet;
 
-import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -8,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import me.dablakbandit.core.server.packet.wrapped.WrappedPacket;
-import me.dablakbandit.core.utils.NMSUtils;
 import net.blitzcube.peapi.api.entity.IEntityIdentifier;
 import net.blitzcube.peapi.api.packet.IEntityMovePacket;
 import net.blitzcube.peapi.entity.EntityIdentifier;
@@ -17,18 +15,6 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  * Created by iso2013 on 8/1/2018.
  */
 public class EntityMovePacket extends EntityPacket implements IEntityMovePacket{
-	
-	private static Class<?>			classPacketPlayOutEntityMove	= NMSUtils.getClass("PacketPlayOutEntityMove");
-	private static Constructor<?>	conPacketPlayOutEntityMove		= NMSUtils.getConstructor(classPacketPlayOutEntityMove);
-	
-	public static WrappedPacket getEmptyPacket(){
-		try{
-			return new WrappedPacket(conPacketPlayOutEntityMove.newInstance());
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return null;
-	}
 	
 	private boolean		onGround;
 	private MoveType	type;
@@ -61,7 +47,7 @@ public class EntityMovePacket extends EntityPacket implements IEntityMovePacket{
 		List<Byte> bytes = packet.getBytes();
 		List<Double> doubles = packet.getDoubles();
 		List<Integer> ints = packet.getInts();
-		switch(MoveType.getMoveType(packet)){
+		switch(MoveType.getMoveType(packet.getRawPacket())){
 		case TELEPORT:
 			return new EntityMovePacket(new EntityIdentifier(entityID, p), packet, bytes.get(1), bytes.get(0), new Vector(doubles.get(0), doubles.get(1), doubles.get(2)), packet.getBooleans().get(0), true);
 		case REL_MOVE:

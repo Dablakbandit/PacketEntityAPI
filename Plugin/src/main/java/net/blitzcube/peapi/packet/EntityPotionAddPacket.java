@@ -17,7 +17,7 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityPotionAddPacket extends EntityPacket implements IEntityPotionAddPacket{
 	
-	private static Class<?>			classPacketPlayOutEntityEffect	= NMSUtils.getClass("PacketPlayOutEntityEffect");
+	private static Class<?>			classPacketPlayOutEntityEffect	= NMSUtils.getNMSClass("PacketPlayOutEntityEffect");
 	private static Constructor<?>	conPacketPlayOutEntityEffect	= NMSUtils.getConstructor(classPacketPlayOutEntityEffect);
 	
 	public static WrappedPacket getEmptyPacket(){

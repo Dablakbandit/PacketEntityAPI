@@ -18,8 +18,8 @@ import net.blitzcube.peapi.entity.EntityIdentifier;
  */
 public class EntityDataPacket extends EntityPacket implements IEntityDataPacket{
 	
-	private static Class<?>		classPacketPlayOutEntityData	= NMSUtils.getClass("PacketPlayOutEntityData");
-	private static Constructor	conPacketPlayOutEntityData		= NMSUtils.getConstructor(classPacketPlayOutEntityData);
+	private static Class<?>		classPacketPlayOutEntityMetadata	= NMSUtils.getNMSClass("PacketPlayOutEntityMetadata");
+	private static Constructor	conPacketPlayOutEntityData			= NMSUtils.getConstructor(classPacketPlayOutEntityMetadata);
 	
 	public static WrappedPacket getEmptyPacket(){
 		try{

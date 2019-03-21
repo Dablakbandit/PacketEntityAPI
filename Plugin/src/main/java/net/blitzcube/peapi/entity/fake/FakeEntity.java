@@ -89,6 +89,16 @@ public class FakeEntity implements IFakeEntity{
 	}
 	
 	@Override
+	public IModifiableEntity getModifiableEntity(){
+		return modifiableEntity;
+	}
+	
+	@Override
+	public Map<String, IEntityModifier> getModifiers(){
+		return modifiers;
+	}
+	
+	@Override
 	public boolean checkIntersect(Player target){
 		return checkIntersect.apply(target, this);
 	}
