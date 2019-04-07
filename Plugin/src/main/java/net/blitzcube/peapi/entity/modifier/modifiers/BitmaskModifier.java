@@ -10,7 +10,7 @@ public class BitmaskModifier extends GenericModifier<Boolean>{
 	private final byte	mask;
 	
 	public BitmaskModifier(int index, byte mask, String label, Byte def){
-		super(Boolean.class, index, label, false);
+		super(Byte.class, index, label, false);
 		this.def = def;
 		this.mask = mask;
 	}

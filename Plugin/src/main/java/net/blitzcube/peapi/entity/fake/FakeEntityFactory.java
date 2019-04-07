@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -15,6 +16,7 @@ import net.blitzcube.peapi.PacketEntityAPI;
 import net.blitzcube.peapi.api.entity.fake.IFakeEntity;
 import net.blitzcube.peapi.api.entity.fake.IFakeEntityFactory;
 import net.blitzcube.peapi.api.entity.hitbox.IHitbox;
+import net.blitzcube.peapi.api.entity.modifier.IEntityModifier;
 import net.blitzcube.peapi.entity.hitbox.Hitbox;
 
 /**
@@ -85,13 +87,13 @@ public class FakeEntityFactory implements IFakeEntityFactory{
 	
 	@Override
 	public IFakeEntity createFakeEntity(EntityType type, boolean lookupModifiers){
-		/*-Map<String, IEntityModifier> modifiers;
-		if (lookupModifiers) {
-		    modifiers = parent.getModifierRegistry().lookup(type).stream()
-		            .collect(Collectors.toMap(IEntityModifier::getLabel, it -> it));
-		} else modifiers = new HashMap<>();*/
+		Map<String, IEntityModifier> modifiers;
+		if(lookupModifiers){
+			modifiers = parent.getModifierRegistry().lookup(type).stream().collect(Collectors.toMap(IEntityModifier::getLabel, it -> it));
+		}else
+			modifiers = new HashMap<>();
 		
-		FakeEntity entity = new FakeEntity(getNextID(), UUID.randomUUID(), type);
+		FakeEntity entity = new FakeEntity(getNextID(), UUID.randomUUID(), type, modifiers);
 		fakeEntities.put(entity.getEntityID(), entity);
 		return entity;
 	}

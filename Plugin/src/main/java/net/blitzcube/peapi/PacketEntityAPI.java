@@ -1,8 +1,11 @@
 package net.blitzcube.peapi;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
@@ -17,6 +20,7 @@ import com.google.common.base.Preconditions;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChainFactory;
 import me.dablakbandit.core.players.CorePlayerManager;
+import me.dablakbandit.core.players.CorePlayers;
 import me.dablakbandit.core.players.packets.PacketHandler;
 import me.dablakbandit.core.players.packets.PacketInfo;
 import me.dablakbandit.core.server.packet.wrapped.WrappedPacket;
@@ -75,7 +79,11 @@ public class PacketEntityAPI extends JavaPlugin implements IPacketEntityAPI{
 		OBJECTS.put(EntityType.LIGHTNING, -1);
 	}
 	
-	private static IPacketEntityAPI	instance;
+	private static IPacketEntityAPI instance;
+	
+	public static JavaPlugin getPlugin(){
+		return (PacketEntityAPI)instance;
+	}
 	
 	private static TaskChainFactory	chainFactory;
 	/*
@@ -88,13 +96,15 @@ public class PacketEntityAPI extends JavaPlugin implements IPacketEntityAPI{
 	
 	@Override
 	public void onLoad(){
+		if(instance == null)
+			instance = this;
+		if(!new File(getDataFolder(), "structure.json").exists()){
+			saveResource("structure.json", false);
+		}
 		this.modifierRegistry = new EntityModifierRegistry();
 		this.fakeEntityFactory = new FakeEntityFactory(this);
 		this.packetFactory = new EntityPacketFactory();
 		this.dispatcher = new PacketEventDispatcher(this);
-		
-		if(instance == null)
-			instance = this;
 	}
 	
 	public void onEnable(){
@@ -186,48 +196,73 @@ public class PacketEntityAPI extends JavaPlugin implements IPacketEntityAPI{
 		return packetFactory;
 	}
 	
-	@Override
-	public void dispatchPacket(IEntityPacket packet, Player target){
-		dispatchPacket(packet, target, 0);
+	public void dispatchPacket(Player target, IEntityPacket... packets){
+		dispatchPacket(target, 0, packets);
 	}
 	
 	@Override
-	public void dispatchPacket(IEntityPacket packet, Player target, int delay){
-		if(packet instanceof IEntityGroupPacket)
-			((IEntityGroupPacket)packet).apply();
-		WrappedPacket c = packet.getWrappedPacket();
-		if(c == null)
-			return;
-		if(delay > 0){
-			Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-				if(c.isPlayIn()){
-					safeReceive(target, c);
-				}else{
-					safeSend(target, c);
-				}
-			}, delay);
-		}else{
-			if(c.isPlayIn()){
-				safeReceive(target, c);
-			}else{
-				safeSend(target, c);
-			}
+	public void dispatchPacket(Collection<Player> targets, IEntityPacket... packets){
+		dispatchPacket(targets, 0, packets);
+	}
+	
+	@Override
+	public void dispatchPacket(Collection<Player> targets, Collection<IEntityPacket> packets){
+		IEntityPacket[] packetsArray = packets.toArray(new IEntityPacket[0]);
+		dispatchPacket(targets, 0, packetsArray);
+	}
+	
+	@Override
+	public void dispatchPacket(Collection<Player> targets, int delay, IEntityPacket... packets){
+		for(Player target : targets){
+			dispatchPacket(target, delay, packets);
 		}
 	}
 	
-	private void safeSend(Player target, WrappedPacket packet){
+	@Override
+	public void dispatchPacket(Player target, int delay, Collection<IEntityPacket> packets){
+		IEntityPacket[] packetsArray = packets.toArray(new IEntityPacket[0]);
+		dispatchPacket(target, delay, packetsArray);
+	}
+	
+	@Override
+	public void dispatchPacket(Player target, int delay, IEntityPacket... packets){
+		if(!target.isOnline()){ return; }
+		for(IEntityPacket packet : packets){
+			if(packet instanceof IEntityGroupPacket){
+				((IEntityGroupPacket)packet).apply();
+			}
+		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+			safeReceive(target, Arrays.stream(packets).map(p -> p.getWrappedPacket()).filter(p -> p.isPlayIn()).collect(Collectors.toList()));
+			safeSend(target, Arrays.stream(packets).map(p -> p.getWrappedPacket()).filter(p -> p.isPlayOut()).collect(Collectors.toList()));
+		}, delay);
+	}
+	
+	private void safeSend(Player target, Collection<WrappedPacket> packets){
+		if(packets.size() == 0){ return; }
 		try{
-			PacketHandler handler = CorePlayerManager.getInstance().getPlayers().get(target).getInfo(PacketInfo.class).getHandler();
-			handler.bypassWrite(packet.getRawPacket(), true);
+			CorePlayers pl = CorePlayerManager.getInstance().getPlayer(target);
+			if(pl == null){ return; }
+			PacketHandler handler = pl.getInfo(PacketInfo.class).getHandler();
+			if(handler == null){ return; }
+			for(WrappedPacket packet : packets){
+				handler.bypassWrite(packet.getRawPacket(), false);
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
 	
-	private void safeReceive(Player target, WrappedPacket packet){
+	private void safeReceive(Player target, Collection<WrappedPacket> packets){
+		if(packets.size() == 0){ return; }
 		try{
-			PacketHandler handler = CorePlayerManager.getInstance().getPlayers().get(target).getInfo(PacketInfo.class).getHandler();
-			handler.bypassRead(packet.getRawPacket(), true);
+			CorePlayers pl = CorePlayerManager.getInstance().getPlayer(target);
+			if(pl == null){ return; }
+			PacketHandler handler = pl.getInfo(PacketInfo.class).getHandler();
+			if(handler == null){ return; }
+			for(WrappedPacket packet : packets){
+				handler.bypassRead(packet.getRawPacket(), false);
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}

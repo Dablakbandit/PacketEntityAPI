@@ -1,12 +1,13 @@
 package net.blitzcube.peapi.api.packet;
 
-import net.blitzcube.peapi.api.entity.IEntityIdentifier;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+
+import net.blitzcube.peapi.api.entity.IEntityIdentifier;
 
 /**
  * @author iso2013
@@ -88,6 +89,8 @@ public interface IEntityPacketFactory{
 	 */
 	IEntitySpawnPacket createEntitySpawnPacket(IEntityIdentifier identifier);
 	
+	IPlayerInfoPacket createPlayerInfoPacket(IPlayerInfoPacket.PlayerInfoAction action, IPlayerInfoPacket.PlayerInfoData... data);
+	
 	/**
 	 * Creates an object spawn packet that will spawn an object for a client.
 	 * <br>
@@ -138,4 +141,6 @@ public interface IEntityPacketFactory{
 	 * @return the constructed packet
 	 */
 	IEntityMovePacket createMovePacket(IEntityIdentifier identifier, Vector location, Vector direction, boolean onGround, IEntityMovePacket.MoveType type);
+	
+	IEntityHeadRotationPacket createHeadRotationPacket(IEntityIdentifier identifier, float yaw);
 }

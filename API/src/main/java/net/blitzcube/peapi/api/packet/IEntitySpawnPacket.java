@@ -84,6 +84,8 @@ public interface IEntitySpawnPacket extends IEntityPacket{
 	 */
 	void setMetadata(List<WrappedObject> data);
 	
+	void setDataWatcher(WrappedObject data);
+	
 	/**
 	 * Rewrites the currently stored metadata to the packet. This is useful if you pull the list instance using
 	 * {@link #getMetadata()} and modify it directly; it will cause the changes to be written to the underlying packet

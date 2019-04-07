@@ -1,11 +1,12 @@
 package net.blitzcube.peapi.entity.hitbox;
 
-import net.blitzcube.peapi.api.entity.hitbox.IHitbox;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.blitzcube.peapi.api.entity.hitbox.IHitbox;
 
 /**
  * Created by iso2013 on 4/21/2018.
@@ -62,6 +63,8 @@ public class Hitbox implements IHitbox{
 		boxes.put(EntityType.SPIDER, new Hitbox(1.4, 0.9));
 		boxes.put(EntityType.GIANT, new Hitbox(3.6, 10.8));
 		boxes.put(EntityType.ZOMBIE, new Hitbox(0.6, 1.95));
+		boxes.put(EntityType.PLAYER, new Hitbox(0.6, 1.95));
+		boxes.put(EntityType.ARMOR_STAND, new Hitbox(0.6, 1.95));
 		boxes.put(EntityType.SLIME, new Hitbox(0.51000005));
 		boxes.put(EntityType.GHAST, new Hitbox(4));
 		boxes.put(EntityType.PIG_ZOMBIE, new Hitbox(0.6, 1.95));

@@ -8,8 +8,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.google.common.base.Preconditions;
-
 import me.dablakbandit.core.server.packet.wrapped.WrappedObject;
 import me.dablakbandit.core.server.packet.wrapped.WrappedPacket;
 import me.dablakbandit.core.utils.NMSUtils;
@@ -87,6 +85,7 @@ public class EntitySpawnPacket extends EntityPacket implements IEntitySpawnPacke
 	private static Constructor<?>	conPacketPlayOutNamedEntitySpawn	= NMSUtils.getConstructor(classPacketPlayOutNamedEntitySpawn);
 	private static Class<?>			classPacketPlayOutSpawnEntityLiving	= NMSUtils.getNMSClass("PacketPlayOutSpawnEntityLiving");
 	private static Constructor<?>	conPacketPlayOutSpawnEntityLiving	= NMSUtils.getConstructor(classPacketPlayOutSpawnEntityLiving);
+	private static Class<?>			classDataWatcher					= NMSUtils.getNMSClass("DataWatcher");
 	
 	public static Constructor getPacketConstructor(EntityType type){
 		return type == EntityType.PLAYER ? conPacketPlayOutNamedEntitySpawn : conPacketPlayOutSpawnEntityLiving;
@@ -96,7 +95,6 @@ public class EntitySpawnPacket extends EntityPacket implements IEntitySpawnPacke
 		try{
 			Constructor<?> constructor = getPacketConstructor(type);
 			Object packet = constructor.newInstance();
-			// TODO blank player stuff?
 			return new WrappedPacket(packet);
 		}catch(Exception e){
 			e.printStackTrace();
@@ -161,9 +159,10 @@ public class EntitySpawnPacket extends EntityPacket implements IEntitySpawnPacke
 	
 	@Override
 	public void setEntityType(EntityType type){
-		Preconditions.checkArgument(this.type != EntityType.PLAYER, "You cannot modify the " + "type of a player spawn packet!");
 		this.type = type;
-		super.wrappedPacket.writeInt(1, ENTITY_TYPE_IDS.get(type));
+		if(type != EntityType.PLAYER){
+			super.wrappedPacket.writeInt(1, ENTITY_TYPE_IDS.get(type));
+		}
 	}
 	
 	@Override
@@ -206,11 +205,12 @@ public class EntitySpawnPacket extends EntityPacket implements IEntitySpawnPacke
 	
 	@Override
 	public void setVelocity(Vector velocity){
-		Preconditions.checkArgument(type != EntityType.PLAYER, "You cannot set the velocity of a player!");
-		this.velocity = velocity;
-		super.wrappedPacket.writeByte(0, (byte)velocity.getX());
-		super.wrappedPacket.writeByte(1, (byte)velocity.getY());
-		super.wrappedPacket.writeByte(2, (byte)velocity.getZ());
+		if(type != EntityType.PLAYER){
+			this.velocity = velocity;
+			super.wrappedPacket.writeByte(0, (byte)velocity.getX());
+			super.wrappedPacket.writeByte(1, (byte)velocity.getY());
+			super.wrappedPacket.writeByte(2, (byte)velocity.getZ());
+		}
 	}
 	
 	@Override
@@ -222,6 +222,11 @@ public class EntitySpawnPacket extends EntityPacket implements IEntitySpawnPacke
 	public void setMetadata(List<WrappedObject> metadata){
 		this.metadata = metadata;
 		super.wrappedPacket.writeList(0, metadata);
+	}
+	
+	@Override
+	public void setDataWatcher(WrappedObject data){
+		super.wrappedPacket.write(0, data.getRawObject(), classDataWatcher);
 	}
 	
 	@Override

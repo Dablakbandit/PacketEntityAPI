@@ -21,11 +21,14 @@ public class ModifiableEntity{
 	private static Class<?>					classDataWatcherRegistry	= NMSUtils.getNMSClass("DataWatcherRegistry");
 	private static Class<?>					classDataWatcherItem		= NMSUtils.getInnerClass(classDataWatcher, "Item");
 	
-	private static Method					register					= NMSUtils.getMethod(classDataWatcher, "register", classDataWatcherObject, Object.class);
+	private static Method					register					= NMSUtils.getMethod(classDataWatcher, "registerObject", classDataWatcherObject, Object.class);
 	private static Method					set							= NMSUtils.getMethod(classDataWatcher, "set", classDataWatcherObject, Object.class);
 	
+	private static Constructor<?>			conDataWatcher				= classDataWatcher.getConstructors()[0];
 	private static Constructor<?>			conDataWatcherItem			= classDataWatcherItem.getConstructors()[0];
 	private static Constructor<?>			conDataWatcherObject		= classDataWatcherObject.getConstructors()[0];
+	
+	private static Field					fieldDataWatcherEntity		= NMSUtils.getFirstFieldOfType(classDataWatcher, NMSUtils.getNMSClass("Entity"));
 	
 	private static Map<Class<?>, Object>	serializers					= new HashMap<>();
 	private static Map<Class<?>, Object>	optionalSerializers			= new HashMap<>();
@@ -80,6 +83,15 @@ public class ModifiableEntity{
 		return optionalSerializers.get(type);
 	}
 	
+	public static Object newDataWatcher(Object entity){
+		try{
+			return conDataWatcher.newInstance(entity);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static Object newDataWatcherItem(Object dataObject, Object item){
 		try{
 			return conDataWatcherItem.newInstance(dataObject, item);
@@ -100,10 +112,10 @@ public class ModifiableEntity{
 	
 	public static void setDataWatcherItem(Object watcher, Object index, Object item, boolean has){
 		try{
-			if(has){
-				set.invoke(item, index, item);
+			if(has && fieldDataWatcherEntity.get(watcher) != null){
+				set.invoke(watcher, index, item);
 			}else{
-				register.invoke(item, index, item);
+				register.invoke(watcher, index, item);
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -147,9 +159,8 @@ public class ModifiableEntity{
 		@Override
 		public void write(int index, Object newValue, Object serializer){
 			Object object = newDataWatcherObject(index, serializer);
-			WrappedObject item = new WrappedObject(newDataWatcherItem(object, newValue));
-			setDataWatcherItem(watcher, object, item.getRawObject(), contains(index));
-			item.writeBoolean(0, true);
+			setDataWatcherItem(watcher.getRawObject(), object, newValue, contains(index));
+			new WrappedObject(read(index)).writeBoolean(0, true);
 		}
 		
 		@Override

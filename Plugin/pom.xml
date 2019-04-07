@@ -3,13 +3,14 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <groupId>me.dablakbandit.packetentityapi</groupId>
     <parent>
-        <artifactId>PacketEntityAPI</artifactId>
-        <groupId>net.blitzcube.peapi</groupId>
-        <version>0.7.2-SNAPSHOT</version>
+        <artifactId>packetentityapi</artifactId>
+        <groupId>me.dablakbandit</groupId>
+        <version>0.7.2</version>
     </parent>
 
-    <artifactId>Plugin</artifactId>
+    <artifactId>plugin</artifactId>
     <packaging>jar</packaging>
 
     <name>Plugin</name>
@@ -46,6 +47,25 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <copy file="${basedir}/target/${project.artifactId}-${project.version}.jar"
+                                      tofile="${basedir}/output/PacketEntityAPI-latest.jar" overwrite="true"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -57,9 +77,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.blitzcube.peapi</groupId>
-            <artifactId>API</artifactId>
-            <version>0.7.2-SNAPSHOT</version>
+            <groupId>me.dablakbandit.packetentityapi</groupId>
+            <artifactId>api</artifactId>
+            <version>0.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>

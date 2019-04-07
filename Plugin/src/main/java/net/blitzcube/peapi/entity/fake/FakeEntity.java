@@ -1,6 +1,5 @@
 package net.blitzcube.peapi.entity.fake;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -10,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import me.dablakbandit.core.server.packet.wrapped.WrappedObject;
 import net.blitzcube.peapi.api.entity.IEntityIdentifier;
 import net.blitzcube.peapi.api.entity.fake.IFakeEntity;
 import net.blitzcube.peapi.api.entity.hitbox.IHitbox;
@@ -34,7 +34,7 @@ public class FakeEntity implements IFakeEntity{
 	private Map<String, Object>							fields;
 	private BiFunction<Player, IFakeEntity, Boolean>	checkIntersect;
 	
-	FakeEntity(int id, UUID uuid, EntityType type){
+	FakeEntity(int id, UUID uuid, EntityType type, Map<String, IEntityModifier> modifiers){
 		this.id = id;
 		this.uuid = uuid;
 		this.type = type;
@@ -42,7 +42,7 @@ public class FakeEntity implements IFakeEntity{
 		this.modifiers = modifiers;
 		this.fields = new HashMap<>();
 		this.hitbox = Hitbox.getByType(type);
-		this.modifiableEntity = new ModifiableEntity.ListBased(new ArrayList());
+		this.modifiableEntity = new ModifiableEntity.WatcherBased(new WrappedObject(ModifiableEntity.newDataWatcher(null)));
 		for(IEntityModifier m : modifiers.values())
 			m.unsetValue(modifiableEntity, true);
 		this.checkIntersect = (p, e) -> e.getHitbox().intersects(p.getEyeLocation().toVector(), p.getEyeLocation().getDirection(), location.toVector());

@@ -1,5 +1,7 @@
 package net.blitzcube.peapi.packet;
 
+import java.util.List;
+
 import org.bukkit.Art;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
@@ -39,7 +41,7 @@ public class EntityPacketFactory implements IEntityPacketFactory{
 		EntityDataPacket p = new EntityDataPacket(entity, EntityDataPacket.getEmptyPacket());
 		IFakeEntity f;
 		if(entity.isFakeEntity() && (f = entity.getFakeEntity().get()) != null){
-			// TODO p.setMetadata(f.getModifiableEntity().getWatchableObjects());
+			p.setMetadata(f.getModifiableEntity().getWatchableObjects());
 		}
 		return p;
 	}
@@ -105,7 +107,8 @@ public class EntityPacketFactory implements IEntityPacketFactory{
 				p.setEntityType(f.getType());
 				p.setLocation(f.getLocation());
 				p.setVelocity(new Vector(0, 0, 0));
-				// TODO p.setMetadata(f.getModifiableEntity().getWatchableObjects());
+				p.setMetadata(f.getModifiableEntity().getWatchableObjects());
+				p.setDataWatcher(f.getModifiableEntity().getDataWatcher());
 				return p;
 			}
 		}else{
@@ -124,6 +127,17 @@ public class EntityPacketFactory implements IEntityPacketFactory{
 				return p;
 			}
 		}
+	}
+	
+	public IPlayerInfoPacket createPlayerInfoPacket(IPlayerInfoPacket.PlayerInfoAction action, IPlayerInfoPacket.PlayerInfoData... data){
+		PlayerInfoPacket p = new PlayerInfoPacket(PlayerInfoPacket.getEmptyPacket(), IPlayerInfoPacket.PlayerInfoAction.ADD_PLAYER);
+		List<IPlayerInfoPacket.PlayerInfoData> info = p.getInfo();
+		for(IPlayerInfoPacket.PlayerInfoData pid : data){
+			info.add(pid);
+		}
+		p.setInfo(info);
+		p.setAction(action);
+		return p;
 	}
 	
 	@Override
@@ -170,7 +184,7 @@ public class EntityPacketFactory implements IEntityPacketFactory{
 		}
 		if(fake){
 			EntityDataPacket d = new EntityDataPacket(identifier, EntityDataPacket.getEmptyPacket());
-			// TODO ? d.setMetadata(f.getModifiableEntity().getWatchableObjects());
+			d.setMetadata(f.getModifiableEntity().getWatchableObjects());
 			return new IEntityPacket[]{ p, d };
 		}else{
 			return new IEntityPacket[]{ p };
@@ -322,9 +336,16 @@ public class EntityPacketFactory implements IEntityPacketFactory{
 		EntityMovePacket p = new EntityMovePacket(identifier, type);
 		if(location != null && type != IEntityMovePacket.MoveType.LOOK)
 			p.setNewPosition(location, type == IEntityMovePacket.MoveType.TELEPORT);
-		if(direction != null && type != IEntityMovePacket.MoveType.LOOK)
+		if(direction != null)
 			p.setNewDirection(direction);
 		p.setOnGround(onGround);
+		return p;
+	}
+	
+	@Override
+	public IEntityHeadRotationPacket createHeadRotationPacket(IEntityIdentifier identifier, float yaw){
+		EntityHeadRotationPacket p = new EntityHeadRotationPacket(identifier, EntityHeadRotationPacket.getEmptyPacket());
+		p.setYaw(yaw);
 		return p;
 	}
 }

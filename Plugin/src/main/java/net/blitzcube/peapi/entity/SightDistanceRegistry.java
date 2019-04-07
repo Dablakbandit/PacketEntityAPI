@@ -1,14 +1,15 @@
 package net.blitzcube.peapi.entity;
 
-import net.blitzcube.peapi.api.entity.IEntityIdentifier;
-import net.blitzcube.peapi.entity.fake.FakeEntity;
+import java.util.*;
+import java.util.stream.Stream;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 
-import java.util.*;
-import java.util.stream.Stream;
+import net.blitzcube.peapi.api.entity.IEntityIdentifier;
+import net.blitzcube.peapi.entity.fake.FakeEntity;
 
 /**
  * Created by iso2013 on 03/04/19.
@@ -57,6 +58,7 @@ public class SightDistanceRegistry{
 				map.put(t, getWithDefaults(sec, defSec, "entity-tracking-range.other", 64));
 			}
 		}
+		map.put(EntityType.UNKNOWN, getWithDefaults(sec, defSec, "entity-tracking-range.other", 64));
 	}
 	
 	private static int getWithDefaults(ConfigurationSection section, ConfigurationSection def, String key, int backup){
@@ -72,10 +74,14 @@ public class SightDistanceRegistry{
 	}
 	
 	public static boolean isVisible(Location l, Player p, double error, EntityType type){
-		if(!l.getWorld().getUID().equals(p.getWorld().getUID()))
-			return false;
 		double max = defaultGet(l.getWorld().getName(), type);
 		max *= error;
+		return isVisibleMax(l, p, max);
+	}
+	
+	public static boolean isVisibleMax(Location l, Player p, double max){
+		if(!l.getWorld().getUID().equals(p.getWorld().getUID()))
+			return false;
 		return Math.abs(l.getX() - p.getLocation().getX()) < max && Math.abs(l.getZ() - p.getLocation().getZ()) < max;
 	}
 	
@@ -134,6 +140,11 @@ public class SightDistanceRegistry{
 		double val = defaultGet(l.getWorld().getName(), t);
 		val *= err;
 		double finalVal = val;
-		return l.getWorld().getPlayers().stream().filter(p -> isNear(finalVal, p.getLocation(), l));
+		return (Stream<Player>)Bukkit.getOnlinePlayers().stream().filter(p -> worldEquals(p, l)).filter(p -> isNear(finalVal, p.getLocation(), l));
 	}
+	
+	private static boolean worldEquals(Player player, Location location){
+		return player.getLocation().getWorld().equals(location.getWorld());
+	}
+	
 }

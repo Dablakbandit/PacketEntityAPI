@@ -61,11 +61,10 @@ public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacke
 		super.wrappedPacket.writeUUID(0, identifier.getUUID());
 	}
 	
-	private ObjectSpawnPacket(IEntityIdentifier identifier, WrappedPacket packet, EntityType type, Location location, String title, BlockFace direction, UUID uuid){
+	private ObjectSpawnPacket(IEntityIdentifier identifier, WrappedPacket packet, EntityType type, Location location, BlockFace direction, UUID uuid){
 		super(identifier, packet, false);
 		this.type = type;
 		this.location = location;
-		this.title = title;
 		this.direction = direction;
 		
 		super.wrappedPacket.writeUUID(0, identifier.getUUID());
@@ -88,14 +87,15 @@ public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacke
 		return unwrap(new EntityIdentifier(entityID, p), c, p.getWorld());
 	}
 	
-	private static Class<?> classBlockPosition = NMSUtils.getNMSClass("BlockPosition");
+	private static Class<?>	classBlockPosition		= NMSUtils.getNMSClass("BlockPosition");
+	private static Class<?>	classBaseBlockPosition	= NMSUtils.getNMSClass("BaseBlockPosition");
 	
 	public static ObjectSpawnPacket unwrap(IEntityIdentifier i, WrappedPacket c, World w){
 		EntityType t = packetTypeToEntity(c);
 		float pitch = 0.0F, yaw = 0.0F;
 		Vector velocity = new Vector();
 		int data = 0;
-		UUID uuid = null;
+		UUID uuid = c.getUUIDs().get(0);
 		Location location;
 		if(t == null)
 			return null;
@@ -106,23 +106,21 @@ public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacke
 			t = PacketEntityAPI.lookupObject(c.getInts().get(6));
 			velocity = new Vector(c.getInts().get(1), c.getInts().get(2), c.getInts().get(3));
 			data = c.getInts().get(7);
-		case PAINTING:
-			uuid = c.getUUIDs().get(0);
-			if(EntityType.PAINTING.equals(t)){
-				WrappedObject blockPositon = c.getWrappedObject(classBlockPosition).get(0);
-				List<Integer> ints = blockPositon.getObjects(Integer.class, blockPositon.getRawObject().getClass().getSuperclass());
-				location = new Location(w, ints.get(0), ints.get(1), ints.get(2));
-				break;
-			}
 		default:
 			location = new Location(w, c.getDoubles().get(0), c.getDoubles().get(1), c.getDoubles().get(2), yaw, pitch);
+			break;
+		case PAINTING:
+			WrappedObject blockPositon = c.getWrappedObject(classBlockPosition).get(0);
+			List<Integer> ints = blockPositon.getObjects(int.class, classBaseBlockPosition);
+			location = new Location(w, ints.get(0), ints.get(1), ints.get(2));
+			break;
 		}
 		if(t == null)
 			return null;
 		i.setUUID(uuid);
 		switch(t){
 		case PAINTING:
-			return new ObjectSpawnPacket(i, c, t, location, c.getStrings().get(0), directionToBlockFace(c.getEnums().get(0)), uuid);
+			return new ObjectSpawnPacket(i, c, t, location, directionToBlockFace(c.getEnums().get(0)), uuid);
 		case EXPERIENCE_ORB:
 			return new ObjectSpawnPacket(i, c, t, location, c.getInts().get(1));
 		case LIGHTNING:
@@ -255,7 +253,6 @@ public class ObjectSpawnPacket extends EntityPacket implements IObjectSpawnPacke
 	public void setTitle(String title){
 		Preconditions.checkArgument(type == EntityType.PAINTING, type.name() + " is not a painting!");
 		Preconditions.checkArgument(title.length() > 13, "That title is too long! Maximum 13 characters.");
-		this.title = title;
 		super.wrappedPacket.writeString(0, title);
 	}
 	

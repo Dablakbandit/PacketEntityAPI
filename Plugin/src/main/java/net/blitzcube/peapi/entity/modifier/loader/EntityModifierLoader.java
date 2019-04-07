@@ -42,8 +42,12 @@ public class EntityModifierLoader{
 			Set<GenericModifier> modifiers = new HashSet<>();
 			Node current = e.getValue();
 			do{
-				for(Node.Attribute a : current.getAttributes())
-					modifiers.addAll(a.asGenericModifier());
+				for(Node.Attribute a : current.getAttributes()){
+					try{
+						modifiers.addAll(a.asGenericModifier());
+					}catch(Exception e1){
+					}
+				}
 			}while((current = current.getParent()) != null);
 			output.put(e.getKey(), ImmutableSet.copyOf(modifiers));
 		}

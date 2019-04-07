@@ -1,15 +1,7 @@
 package net.blitzcube.peapi.entity.modifier;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import net.blitzcube.peapi.api.entity.modifier.IEntityModifier;
-import net.blitzcube.peapi.api.entity.modifier.IEntityModifierRegistry;
-import net.blitzcube.peapi.entity.modifier.loader.EntityModifierLoader;
-import net.blitzcube.peapi.entity.modifier.modifiers.GenericModifier;
-import net.blitzcube.peapi.entity.modifier.modifiers.OptChatModifier;
-import net.blitzcube.peapi.entity.modifier.modifiers.OptModifier;
-import org.bukkit.entity.EntityType;
-
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -19,18 +11,35 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import org.bukkit.entity.EntityType;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
+import net.blitzcube.peapi.PacketEntityAPI;
+import net.blitzcube.peapi.api.entity.modifier.IEntityModifier;
+import net.blitzcube.peapi.api.entity.modifier.IEntityModifierRegistry;
+import net.blitzcube.peapi.entity.modifier.loader.EntityModifierLoader;
+import net.blitzcube.peapi.entity.modifier.modifiers.GenericModifier;
+import net.blitzcube.peapi.entity.modifier.modifiers.OptChatModifier;
+import net.blitzcube.peapi.entity.modifier.modifiers.OptModifier;
+
 /**
  * Created by iso2013 on 4/18/2018.
  */
 public class EntityModifierRegistry implements IEntityModifierRegistry{
-	private final ImmutableMap<EntityType, ImmutableSet<GenericModifier>> modifiers;
+	private ImmutableMap<EntityType, ImmutableSet<GenericModifier>> modifiers;
 	
 	public EntityModifierRegistry(){
-		this.modifiers = EntityModifierLoader.getModifiers(this.getClass().getResourceAsStream("/structure.json"));
+		try{
+			this.modifiers = EntityModifierLoader.getModifiers(new FileInputStream(new File(PacketEntityAPI.getPlugin().getDataFolder(), "/structure.json")));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	public Set<IEntityModifier> lookup(EntityType type){
-		return new HashSet<>((modifiers.get(type)));
+		return new HashSet<>(modifiers.get(type));
 	}
 	
 	@Override

@@ -50,7 +50,7 @@ public interface IEntityClickPacket extends IEntityPacket{
 			return values()[en.ordinal()];
 		}
 		
-		private static Class<?> classEnumEntityUseAction = NMSUtils.getInnerClass(NMSUtils.getClass("PacketPlayInUseEntity"), "EnumEntityUseAction");
+		private static Class<?> classEnumEntityUseAction = NMSUtils.getInnerClass(NMSUtils.getNMSClass("PacketPlayInUseEntity"), "EnumEntityUseAction");
 		
 		/**
 		 * Converts this enum to the wrapped ProtocolLib enum. Not really designed for public use, but it wouldn't harm

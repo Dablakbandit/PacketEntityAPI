@@ -1,5 +1,6 @@
 package net.blitzcube.peapi.api;
 
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.bukkit.Location;
@@ -119,20 +120,15 @@ public interface IPacketEntityAPI{
 	 */
 	IEntityPacketFactory getPacketFactory();
 	
-	/**
-	 * Sends a packet to the specified player or as the specified player.
-	 *
-	 * @param packet the packet to send
-	 * @param target the player to send it to
-	 */
-	void dispatchPacket(IEntityPacket packet, Player target);
+	void dispatchPacket(Player target, IEntityPacket... packets);
 	
-	/**
-	 * Sends a packet to the specified player or as the specified player at a specified delay.
-	 *
-	 * @param packet the packet to send
-	 * @param target the player to send it to
-	 * @param delay  the number of ticks to wait
-	 */
-	void dispatchPacket(IEntityPacket packet, Player target, int delay);
+	void dispatchPacket(Collection<Player> targets, IEntityPacket... packets);
+	
+	void dispatchPacket(Collection<Player> targets, Collection<IEntityPacket> packets);
+	
+	void dispatchPacket(Player target, int delay, IEntityPacket... packets);
+	
+	void dispatchPacket(Player target, int delay, Collection<IEntityPacket> packets);
+	
+	void dispatchPacket(Collection<Player> targets, int delay, IEntityPacket... packets);
 }

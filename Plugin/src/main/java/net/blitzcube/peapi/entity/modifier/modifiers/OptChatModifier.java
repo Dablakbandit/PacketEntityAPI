@@ -2,30 +2,27 @@ package net.blitzcube.peapi.entity.modifier.modifiers;
 
 import java.util.Optional;
 
-import me.dablakbandit.core.json.JSONObject;
 import me.dablakbandit.core.utils.NMSUtils;
 import me.dablakbandit.core.utils.jsonformatter.JSONFormatter;
 import net.blitzcube.peapi.api.entity.modifier.IModifiableEntity;
 import net.blitzcube.peapi.entity.modifier.ModifiableEntity;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 
 /**
  * Created by iso2013 on 8/20/2018.
  */
-public class OptChatModifier extends OptModifier<BaseComponent[]>{
+public class OptChatModifier extends OptModifier<JSONFormatter>{
 	
 	private static Class<?>				classIChatBaseComponent	= NMSUtils.getNMSClass("IChatBaseComponent");
 	private static Object				serializer				= ModifiableEntity.getOptionalSerializer(classIChatBaseComponent);
 	private final PseudoStringModifier	pseudoStringModifier	= new PseudoStringModifier(this);
 	
-	public OptChatModifier(int index, String label, Optional<BaseComponent[]> def){
+	public OptChatModifier(int index, String label, Optional<JSONFormatter> def){
 		super(null, index, label, def);
 	}
 	
 	@Override
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	public Optional<BaseComponent[]> getValue(IModifiableEntity target){
+	public Optional<JSONFormatter> getValue(IModifiableEntity target){
 		Object val = target.read(super.index);
 		if(val == null)
 			return null;
@@ -34,7 +31,7 @@ public class OptChatModifier extends OptModifier<BaseComponent[]>{
 		Optional bp = (Optional)val;
 		return bp.map(wrappedChatComponent -> {
 			try{
-				return ChatModifier.deSerialize(wrappedChatComponent);
+				return JSONFormatter.fromSerialized(wrappedChatComponent);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -43,15 +40,12 @@ public class OptChatModifier extends OptModifier<BaseComponent[]>{
 	}
 	
 	@Override
-	public void setValue(IModifiableEntity target, Optional<BaseComponent[]> newValue){
+	public void setValue(IModifiableEntity target, Optional<JSONFormatter> newValue){
 		if(newValue != null){
 			if(newValue.isPresent()){
-				BaseComponent[] v = newValue.get();
-				JSONFormatter jf = new JSONFormatter();
+				JSONFormatter v = newValue.get();
 				try{
-					jf.append(new JSONObject(ComponentSerializer.toString(v)));
-					
-					target.write(index, jf.toSerialized(), serializer);
+					target.write(index, Optional.of(v.toSerialized()), serializer);
 				}catch(Exception e){
 					e.printStackTrace();
 				}
@@ -63,8 +57,8 @@ public class OptChatModifier extends OptModifier<BaseComponent[]>{
 	}
 	
 	@Override
-	public Class<BaseComponent[]> getFieldType(){
-		return BaseComponent[].class;
+	public Class<JSONFormatter> getFieldType(){
+		return JSONFormatter.class;
 	}
 	
 	public PseudoStringModifier asPseudoStringModifier(){

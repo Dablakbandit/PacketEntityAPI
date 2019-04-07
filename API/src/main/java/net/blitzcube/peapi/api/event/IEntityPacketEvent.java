@@ -1,7 +1,8 @@
 package net.blitzcube.peapi.api.event;
 
-import net.blitzcube.peapi.api.packet.IEntityPacket;
 import org.bukkit.entity.Player;
+
+import net.blitzcube.peapi.api.packet.IEntityPacket;
 
 /**
  * @author iso2013
@@ -51,6 +52,6 @@ public interface IEntityPacketEvent{
 	 * The types of packets that these events can fire for.
 	 */
 	enum EntityPacketType{
-		ANIMATION, CLICK, DATA, DESTROY, EQUIPMENT, ENTITY_SPAWN, MOUNT, OBJECT_SPAWN, STATUS, ADD_EFFECT, REMOVE_EFFECT, MOVE
+		ANIMATION, CLICK, DATA, DESTROY, EQUIPMENT, ENTITY_SPAWN, MOUNT, OBJECT_SPAWN, STATUS, ADD_EFFECT, REMOVE_EFFECT, MOVE, HEAD_ROTATION
 	}
 }

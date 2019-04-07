@@ -38,6 +38,7 @@ public class GenericListener extends WrappedPacketListener{
 		TYPES.put(NMSUtils.getNMSClass("PacketPlayOutAnimation"), IEntityPacketEvent.EntityPacketType.ANIMATION);
 		TYPES.put(NMSUtils.getNMSClass("PacketPlayOutEntityEffect"), IEntityPacketEvent.EntityPacketType.ADD_EFFECT);
 		TYPES.put(NMSUtils.getNMSClass("PacketPlayOutRemoveEntityEffect"), IEntityPacketEvent.EntityPacketType.REMOVE_EFFECT);
+		TYPES.put(NMSUtils.getNMSClass("PacketPlayOutEntityHeadRotation"), IEntityPacketEvent.EntityPacketType.HEAD_ROTATION);
 		TYPES.put(NMSUtils.getInnerClass(classPacketPlayOutEntity, "PacketPlayOutRelEntityMove"), IEntityPacketEvent.EntityPacketType.MOVE);
 		TYPES.put(NMSUtils.getInnerClass(classPacketPlayOutEntity, "PacketPlayOutRelEntityMoveLook"), IEntityPacketEvent.EntityPacketType.MOVE);
 		TYPES.put(NMSUtils.getInnerClass(classPacketPlayOutEntity, "PacketPlayOutEntityLook"), IEntityPacketEvent.EntityPacketType.MOVE);
@@ -96,7 +97,7 @@ public class GenericListener extends WrappedPacketListener{
 			read = false;
 			
 			w = new EntityClickPacket(lookingAt.getIdentifier(), packet);
-			((EntityClickPacket)w).setClickType(IEntityClickPacket.ClickType.ATTACK);
+			((EntityClickPacket)w).setClickType(IEntityClickPacket.ClickType.getByEnum(packet.getEnums().get(0)));
 		}
 		IEntityPacketEvent e = new EntityPacketEvent(w, IEntityPacketEvent.EntityPacketType.CLICK, target);
 		dispatcher.dispatch(e, null);

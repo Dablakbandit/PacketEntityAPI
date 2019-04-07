@@ -52,6 +52,8 @@ public abstract class EntityPacket implements IEntityPacket{
 			return EntityPotionRemovePacket.unwrap(entityID, packet, target);
 		case MOVE:
 			return EntityMovePacket.unwrap(entityID, packet, target);
+		case HEAD_ROTATION:
+			return EntityHeadRotationPacket.unwrap(entityID, packet, target);
 		}
 		return null;
 	}

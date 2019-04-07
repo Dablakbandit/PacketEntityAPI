@@ -1,10 +1,9 @@
 package net.blitzcube.peapi.entity.modifier.modifiers;
 
-import net.blitzcube.peapi.api.entity.modifier.IModifiableEntity;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-
 import java.util.Optional;
+
+import me.dablakbandit.core.utils.jsonformatter.JSONFormatter;
+import net.blitzcube.peapi.api.entity.modifier.IModifiableEntity;
 
 /**
  * Created by iso2013 on 8/20/2018.
@@ -17,8 +16,8 @@ public class PseudoStringModifier extends GenericModifier<String>{
 		this.internal = internal;
 	}
 	
-	private static String fromComponentOptional(Optional<BaseComponent[]> components){
-		return components.map(TextComponent::toLegacyText).orElse(null);
+	private static String fromComponentOptional(Optional<JSONFormatter> components){
+		return components.get().toNormalString();
 	}
 	
 	@Override
@@ -28,6 +27,6 @@ public class PseudoStringModifier extends GenericModifier<String>{
 	
 	@Override
 	public void setValue(IModifiableEntity target, String newValue){
-		internal.setValue(target, Optional.of(TextComponent.fromLegacyText(newValue)));
+		internal.setValue(target, Optional.of(new JSONFormatter().append(newValue)));
 	}
 }
