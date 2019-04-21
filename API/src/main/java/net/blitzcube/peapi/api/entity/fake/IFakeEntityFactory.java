@@ -1,9 +1,10 @@
 package net.blitzcube.peapi.api.entity.fake;
 
-import net.blitzcube.peapi.api.entity.hitbox.IHitbox;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.util.Vector;
+
+import net.blitzcube.peapi.api.entity.hitbox.IHitbox;
 
 /**
  * @author iso2013
@@ -51,6 +52,8 @@ public interface IFakeEntityFactory{
 	 * @return the generated fake entity
 	 */
 	IFakeEntity createFakeEntity(EntityType type);
+	
+	void removeFakeEntity(IFakeEntity entity);
 	
 	/**
 	 * Creates a fake entity of the given type. If desired, this method can also populate a map containing the possible

@@ -62,6 +62,7 @@ public class GenericListener extends WrappedPacketListener{
 	
 	private static Class<?>	classPacketPlayInUseEntity		= NMSUtils.getNMSClass("PacketPlayInUseEntity");
 	private static Class<?>	classPacketPlayInArmAnimation	= NMSUtils.getNMSClass("PacketPlayInArmAnimation");
+	private static Class<?>	classPacketPlayInUseItem		= NMSUtils.getNMSClass("PacketPlayInUseItem");
 	
 	public boolean isWriteWhitelisted(WrappedPacket packet){
 		return TYPES.keySet().contains(packet.getRawPacket().getClass());
@@ -69,7 +70,7 @@ public class GenericListener extends WrappedPacketListener{
 	
 	public boolean isReadWhitelisted(WrappedPacket packet){
 		Class<?> clazz = packet.getRawPacket().getClass();
-		return clazz.equals(classPacketPlayInUseEntity) || clazz.equals(classPacketPlayInArmAnimation);
+		return clazz.equals(classPacketPlayInUseEntity) || clazz.equals(classPacketPlayInArmAnimation) || clazz.equals(classPacketPlayInUseItem);
 	}
 	
 	@Override
@@ -89,22 +90,23 @@ public class GenericListener extends WrappedPacketListener{
 			
 			w = EntityPacket.unwrapFromType(entityID, IEntityPacketEvent.EntityPacketType.CLICK, packet, target);
 		}else if(packet.getRawPacket().getClass().equals(classPacketPlayInArmAnimation)){
-			if(!collidable)
-				return true;
+			if(!collidable){ return true; }
 			FakeEntity lookingAt = parent.getFakeEntities().stream().filter(e -> parent.isVisible(e.getLocation(), target, 1) && e.checkIntersect(target)).findAny().orElse(null);
-			if(lookingAt == null)
-				return true;
+			if(lookingAt == null){ return true; }
 			read = false;
 			
-			w = new EntityClickPacket(lookingAt.getIdentifier(), packet);
-			((EntityClickPacket)w).setClickType(IEntityClickPacket.ClickType.getByEnum(packet.getEnums().get(0)));
+			w = new EntityClickPacket(lookingAt.getIdentifier(), packet, IEntityClickPacket.ClickType.ATTACK);
+		}else if(packet.getRawPacket().getClass().equals(classPacketPlayInUseItem)){
+			if(!collidable || packet.getEnums().get(1).ordinal() == 0){ return true; }
+			FakeEntity lookingAt = parent.getFakeEntities().stream().filter(e -> parent.isVisible(e.getLocation(), target, 1) && e.checkIntersect(target)).findAny().orElse(null);
+			if(lookingAt == null){ return true; }
+			read = false;
+			
+			w = new EntityClickPacket(lookingAt.getIdentifier(), packet, IEntityClickPacket.ClickType.INTERACT);
 		}
 		IEntityPacketEvent e = new EntityPacketEvent(w, IEntityPacketEvent.EntityPacketType.CLICK, target);
 		dispatcher.dispatch(e, null);
-		if(e.isCancelled()){
-			read = false;
-		}
-		return read;
+		return read && e.isCancelled();
 	}
 	
 	@Override

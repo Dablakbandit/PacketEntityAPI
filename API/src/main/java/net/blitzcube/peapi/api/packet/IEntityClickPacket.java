@@ -50,7 +50,9 @@ public interface IEntityClickPacket extends IEntityPacket{
 			return values()[en.ordinal()];
 		}
 		
-		private static Class<?> classEnumEntityUseAction = NMSUtils.getInnerClass(NMSUtils.getNMSClass("PacketPlayInUseEntity"), "EnumEntityUseAction");
+		private static Class<?>	classPacketPlayInUseEntity	= NMSUtils.getNMSClass("PacketPlayInUseEntity");
+		private static Class<?>	classEnumEntityUseAction	= NMSUtils.getInnerClass(classPacketPlayInUseEntity, "EnumEntityUseAction");
+		private static Class<?>	classEnumHand				= NMSUtils.getNMSClass("EnumHand");
 		
 		/**
 		 * Converts this enum to the wrapped ProtocolLib enum. Not really designed for public use, but it wouldn't harm
@@ -58,8 +60,12 @@ public interface IEntityClickPacket extends IEntityPacket{
 		 *
 		 * @return the ProtocolLib enum wrapper.
 		 */
-		public Enum<?> getPacketEquivalent(){
-			return NMSUtils.getEnum(this.ordinal(), classEnumEntityUseAction);
+		public Enum<?> getPacketEquivalent(Class<?> clazz){
+			if(clazz.equals(classPacketPlayInUseEntity)){
+				return NMSUtils.getEnum(this.ordinal(), classEnumEntityUseAction);
+			}else{
+				return NMSUtils.getEnum(-this.ordinal() + 1, classEnumHand);
+			}
 		}
 	}
 }

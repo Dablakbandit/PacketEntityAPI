@@ -39,7 +39,7 @@ public class EntityAnimationPacket extends EntityPacket implements IEntityAnimat
 	}
 	
 	static EntityPacket unwrap(int entityID, WrappedPacket packet, Player p){
-		return new EntityAnimationPacket(new EntityIdentifier(entityID, p), packet, AnimationType.values()[packet.getInts().get(0)]);
+		return new EntityAnimationPacket(new EntityIdentifier(entityID, p), packet, AnimationType.values()[packet.getInts().get(1)]);
 	}
 	
 	@Override

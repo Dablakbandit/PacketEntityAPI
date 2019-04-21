@@ -28,14 +28,14 @@ public class EulerAngleModifier extends GenericModifier<EulerAngle>{
 			return null;
 		WrappedObject object = new WrappedObject(vector);
 		List<Float> floats = object.getFloats();
-		return new EulerAngle(floats.get(0), floats.get(1), floats.get(2));
+		return new EulerAngle((float)Math.toRadians(floats.get(0)), (float)Math.toRadians(floats.get(1)), (float)Math.toRadians(floats.get(2)));
 	}
 	
 	@Override
-	public void setValue(IModifiableEntity target, EulerAngle newValue){
-		if(newValue != null){
+	public void setValue(IModifiableEntity target, EulerAngle old){
+		if(old != null){
 			try{
-				target.write(super.index, conVector3f.newInstance((float)newValue.getX(), (float)newValue.getY(), (float)newValue.getZ()), serializer);
+				target.write(super.index, conVector3f.newInstance((float)Math.toDegrees(old.getX()), (float)Math.toDegrees(old.getY()), (float)Math.toDegrees(old.getZ())), serializer);
 			}catch(Exception e){
 				e.printStackTrace();
 			}

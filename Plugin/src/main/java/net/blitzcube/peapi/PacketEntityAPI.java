@@ -232,10 +232,18 @@ public class PacketEntityAPI extends JavaPlugin implements IPacketEntityAPI{
 				((IEntityGroupPacket)packet).apply();
 			}
 		}
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+		delay(() -> {
 			safeReceive(target, Arrays.stream(packets).map(p -> p.getWrappedPacket()).filter(p -> p.isPlayIn()).collect(Collectors.toList()));
 			safeSend(target, Arrays.stream(packets).map(p -> p.getWrappedPacket()).filter(p -> p.isPlayOut()).collect(Collectors.toList()));
 		}, delay);
+	}
+	
+	private void delay(Runnable run, int delay){
+		if(delay > 0){
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, run, delay);
+		}else{
+			run.run();
+		}
 	}
 	
 	private void safeSend(Player target, Collection<WrappedPacket> packets){

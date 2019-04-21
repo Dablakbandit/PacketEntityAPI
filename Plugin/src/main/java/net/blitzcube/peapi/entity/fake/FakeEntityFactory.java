@@ -86,6 +86,11 @@ public class FakeEntityFactory implements IFakeEntityFactory{
 	}
 	
 	@Override
+	public void removeFakeEntity(IFakeEntity entity){
+		fakeEntities.remove(entity.getEntityID());
+	}
+	
+	@Override
 	public IFakeEntity createFakeEntity(EntityType type, boolean lookupModifiers){
 		Map<String, IEntityModifier> modifiers;
 		if(lookupModifiers){
